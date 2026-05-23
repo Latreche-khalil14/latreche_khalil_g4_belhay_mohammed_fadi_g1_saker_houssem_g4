@@ -1,0 +1,148 @@
+
+
+
+<div class="hero-section">
+  <h2 class="page-title">Register for a Contest</h2>
+  <p class="page-desc">Enroll a member in a contest of their specialty. The system will automatically enforce category matching.</p>
+</div>
+
+<% if (locals.success) { %>
+  <div class="alert alert-success">
+    <strong>✓ Success :</strong> <%= success %>
+  </div>
+<% } %>
+
+<% if (locals.error) { %>
+  <div class="alert alert-error">
+    <strong>✗ Warning :</strong> <%= error %>
+  </div>
+<% } %>
+
+<div class="form-container">
+  <form action="/register" method="POST" id="registerForm">
+    
+    <!-- CONTEST SELECTOR -->
+    <div class="form-group">
+      <label for="contestId">Select Contest</label>
+      <select name="contestId" id="contestId" required>
+        <option value="" disabled selected>-- Choose a contest --</option>
+        <% contests.forEach(contest => { %>
+          <option value="<%= contest.id %>" data-cat-id="<%= contest.catId %>"><%= contest.titre %> [<%= contest.catLibelle %>]</option>
+        <% }) %>
+      </select>
+    </div>
+
+    <!-- MEMBER SELECTOR -->
+    <div class="form-group">
+      <label for="memberId">Select Participant Member</label>
+      <select name="memberId" id="memberId" required disabled>
+        <option value="" disabled selected>-- Please select a contest first --</option>
+        <% members.forEach(member => { %>
+          <option value="<%= member.id %>" data-cat-id="<%= member.catId %>"><%= member.prenom %> <%= member.nom %> [<%= member.catLibelle %>]</option>
+        <% }) %>
+      </select>
+      <small style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.25rem;">
+        Only members belonging to the same specialty as the selected contest are shown.
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label style="display:flex; align-items:center; gap:0.5rem;">
+        <input type="checkbox" id="isNewMember" name="isNewMember" />
+        Nouveau membre (saisie manuelle)
+      </label>
+    </div>
+
+    <div id="newMemberFields" style="display:none;">
+      <div class="row-inputs">
+        <div class="form-group">
+          <label for="newNom">Nom</label>
+          <input type="text" id="newNom" name="newNom" placeholder="Ex: Zerrouki" />
+        </div>
+        <div class="form-group">
+          <label for="newPrenom">Prenom</label>
+          <input type="text" id="newPrenom" name="newPrenom" placeholder="Ex: Imene" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="newEmail">Email</label>
+        <input type="email" id="newEmail" name="newEmail" placeholder="exemple@club.dz" />
+      </div>
+    </div>
+
+    <!-- COMPLEXITY & EXECUTION TIME IN A ROW -->
+    <div class="row-inputs">
+      <div class="form-group">
+        <label for="complexity">Algorithm Complexity (/100)</label>
+        <input type="number" name="complexity" id="complexity" min="0" max="100" placeholder="Ex: 85" required>
+      </div>
+
+      <div class="form-group">
+        <label for="executionTime">Execution Time (ms)</label>
+        <input type="number" name="executionTime" id="executionTime" min="1" placeholder="Ex: 120" required>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-submit">Submit Registration</button>
+  </form>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const contestSelect = document.getElementById('contestId');
+    const memberSelect = document.getElementById('memberId');
+    const newMemberToggle = document.getElementById('isNewMember');
+    const newMemberFields = document.getElementById('newMemberFields');
+    const newNomInput = document.getElementById('newNom');
+    const newPrenomInput = document.getElementById('newPrenom');
+    const newEmailInput = document.getElementById('newEmail');
+    const originalOptions = Array.from(memberSelect.options);
+
+    function updateMemberMode() {
+      const isNew = newMemberToggle.checked;
+      newMemberFields.style.display = isNew ? 'block' : 'none';
+      memberSelect.disabled = isNew ? true : !contestSelect.value;
+      memberSelect.required = !isNew;
+      newNomInput.required = isNew;
+      newPrenomInput.required = isNew;
+      newEmailInput.required = isNew;
+    }
+
+    contestSelect.addEventListener('change', function() {
+      const selectedContestOpt = contestSelect.options[contestSelect.selectedIndex];
+      const contestCatId = selectedContestOpt.getAttribute('data-cat-id');
+
+      memberSelect.removeAttribute('disabled');
+
+      memberSelect.innerHTML = '';
+
+      const defaultOpt = document.createElement('option');
+      defaultOpt.value = '';
+      defaultOpt.disabled = true;
+      defaultOpt.selected = true;
+      defaultOpt.textContent = '-- Choose a member --';
+      memberSelect.appendChild(defaultOpt);
+
+      let matchCount = 0;
+      originalOptions.forEach(option => {
+        if (option.getAttribute('data-cat-id') === contestCatId) {
+          memberSelect.appendChild(option.cloneNode(true));
+          matchCount++;
+        }
+      });
+
+      if (matchCount === 0) {
+        const noMemOpt = document.createElement('option');
+        noMemOpt.value = '';
+        noMemOpt.disabled = true;
+        noMemOpt.textContent = 'No registered members in this specialty';
+        memberSelect.appendChild(noMemOpt);
+      }
+
+      updateMemberMode();
+    });
+
+    newMemberToggle.addEventListener('change', updateMemberMode);
+    updateMemberMode();
+  });
+</script>

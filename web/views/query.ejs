@@ -1,0 +1,157 @@
+
+
+
+<div class="hero-section">
+  <h2 class="page-title">Free XQuery Console</h2>
+  <p class="page-desc">Enter any XQuery or XQuery Update query to execute directly on the <code>club.xml</code> database.</p>
+</div>
+
+<div class="console-container">
+  <div class="left-column">
+    <div class="suggestions">
+      <h3 class="suggestions-title">Suggested Queries</h3>
+      <ul class="suggestions-list">
+<li><button type="button" class="suggest-btn" data-query="doc('club.xml')//membre">List All Members</button></li>
+<li><button type="button" class="suggest-btn" data-query="for $c in doc('club.xml')//concours/concours return $c">List All Contests</button></li>
+<li><button type="button" class="suggest-btn" data-query="for $p in doc('club.xml')//participant return $p">List All Participants</button></li>
+<li><button type="button" class="suggest-btn" data-query="doc('club.xml')//categorie">List All Categories</button></li>
+<li>
+  <button type="button" class="suggest-btn" data-query="
+    for $c in doc('club.xml')//concours/concours
+    for $p in $c/participants/participant
+    let $m := doc('club.xml')//membre[@id = $p/@membreRef]
+    let $score := round((xs:decimal($p/complexite) + xs:decimal($p/tempsExecution)) * xs:decimal($c/@coefficient), 2)
+    return
+      <scoreConcours>
+        <titreConcours>{string($c/titre)}</titreConcours>
+        <participant>{concat($m/prenom, ' ', $m/nom)}</participant>
+        <complexite>{string($p/complexite)}</complexite>
+        <tempsExecution>{string($p/tempsExecution)}</tempsExecution>
+        <score>{$score}</score>
+      </scoreConcours>
+  ">Calcul Scores (Q3)</button>
+</li>
+<li>
+  <button type="button" class="suggest-btn" data-query="
+    for $c in doc('club.xml')//concours/concours
+    let $scores :=
+      for $p in $c/participants/participant
+      let $s := (xs:decimal($p/complexite) + xs:decimal($p/tempsExecution)) * xs:decimal($c/@coefficient)
+      return
+        <partScore id='{$p/@membreRef}'>
+          <score>{$s}</score>
+        </partScore>
+    let $maxScore := max($scores/score)
+    return
+      <concours id='{$c/@id}'>
+        <titre>{string($c/titre)}</titre>
+        <vainqueurs>{
+          for $ps in $scores[score = $maxScore]
+          let $m := doc('club.xml')//membre[@id = $ps/@id]
+          return
+            <vainqueur>
+              <nom>{string($m/nom)}</nom>
+              <prenom>{string($m/prenom)}</prenom>
+              <score>{round(xs:decimal($ps/score), 2)}</score>
+            </vainqueur>
+        }</vainqueurs>
+      </concours>
+  ">Show Winners (Q4)</button>
+</li>
+<li>
+  <button type="button" class="suggest-btn" data-query="
+    declare variable $categorie external := 'Intelligence Artificielle';
+    <membresCategorie categorie='{$categorie}'>
+      {
+        for $m in doc('club.xml')//membre
+        let $cat := doc('club.xml')//categorie[@id = $m/@categorieRef]
+        where $cat/@libelle = $categorie
+        order by $m/nom, $m/prenom
+        return
+          <membre id='{$m/@id}'>
+            <nom>{string($m/nom)}</nom>
+            <prenom>{string($m/prenom)}</prenom>
+            <email>{string($m/email)}</email>
+          </membre>
+      }
+    </membresCategorie>
+  ">Members of Category (Q5)</button>
+</li>
+</ul>
+    </div>
+    <form action="/query" method="POST" class="console-panel">
+      <div class="console-header">
+        <div class="console-title">
+          <span class="console-dot"></span>XQuery Query Editor
+        </div>
+        <button type="submit" class="btn-console-run">
+          <span>▶</span> Run
+        </button>
+      </div>
+      <div class="console-body">
+        <textarea name="code" class="console-textarea" placeholder="(: Enter your XQuery here :)" required autocomplete="off" spellcheck="false"><%= code && code.trim() !== '' ? code : `(: Example: List all members of category C1 :)
+  doc("club.xml")//membre[@categorieRef="C1"]` %></textarea>
+      </div>
+    </form>
+  </div>
+
+  <!-- RIGHT PANEL: TERMINAL OUTPUT -->
+  <div class="console-panel console-output-panel">
+    <div class="console-header">
+    <div class="console-title">
+      <% if (locals.error) { %>
+        <span class="console-dot red"></span>Compilation error
+      <% } else if (locals.result !== null && (Array.isArray(locals.result) ? locals.result.length > 0 : String(locals.result).trim() !== '')) { %>
+        <span class="console-dot green"></span>Execution result
+      <% } else { %>
+        <span class="console-dot"></span>Terminal output
+      <% } %>
+    </div>
+    <button type="button" class="btn-copy" onclick="copyResult()">Copy</button>
+    <button type="button" class="btn-clear" onclick="clearResult()">Clear</button>
+  </div>
+    
+    <% if (locals.error) { %>
+  <div class="console-output error"><%= error %></div>
+<% } else if (locals.result !== null && (Array.isArray(locals.result) ? locals.result.length > 0 : String(locals.result).trim() !== '')) { %>
+  <div class="console-output"><%= result %></div>
+<% } else { %>
+  <div class="console-output" style="color: var(--text-muted);"><em>(no output)</em></div>
+<% } %>
+  </div>
+
+</div>
+
+<script>
+function copyResult() {
+  const output = document.querySelector('.console-output');
+  if (output) {
+    const text = output.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+    }).catch(()=>{});
+  }
+}
+function applySuggestion(query) {
+  const textarea = document.querySelector('.console-textarea');
+  if (textarea) {
+    textarea.value = query;
+    textarea.focus();
+    textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
+  }
+}
+function clearResult() {
+  const output = document.querySelector('.console-output');
+  if (output) {
+    output.innerHTML = '<em>(no output)</em>';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.suggest-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const query = btn.getAttribute('data-query');
+      if (query) applySuggestion(query);
+    });
+  });
+});
+</script>

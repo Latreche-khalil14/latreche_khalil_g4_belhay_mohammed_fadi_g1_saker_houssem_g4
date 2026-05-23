@@ -1,0 +1,12 @@
+
+
+<div class="error-page">
+  <h2 class="error-title">🚨 Something went wrong</h2>
+  <% if (error && error.message) { %>
+    <p class="error-message"><strong>Message:</strong> <%= error.message %></p>
+  <% } else { %>
+    <p class="error-message">An unexpected error occurred.</p>
+  <% } %>
+  <pre class="error-stack"><%= error.stack %></pre>
+  <a href="/" class="btn-home">← Return to Home</a>
+</div>

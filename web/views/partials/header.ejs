@@ -1,0 +1,11 @@
+<header>
+  <nav class="navbar">
+    <ul class="nav-list">
+      <li class="nav-item"><a href="/" class="nav-link <%= (activeTab === 'home' || activeTab === 'contests') ? 'active' : '' %>">Home</a></li>
+      <li class="nav-item"><a href="/register" class="nav-link <%= activeTab === 'register' ? 'active' : '' %>">Register</a></li>
+      <li class="nav-item"><a href="/query" class="nav-link <%= activeTab === 'query' ? 'active' : '' %>">XQuery Console</a></li>
+      <li class="nav-item"><a href="/results" class="nav-link <%= activeTab === 'results' ? 'active' : '' %>">Results</a></li>
+      <li class="nav-item"><button id="themeToggle" class="theme-toggle">☀️</button></li>
+    </ul>
+  </nav>
+</header>

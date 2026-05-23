@@ -1,0 +1,102 @@
+
+
+
+<div class="hero-section">
+  <h2 class="page-title">Leaderboards &amp; Results</h2>
+  <p class="page-desc">Select a competition to view the calculated scores and identify the winner(s).</p>
+</div>
+
+<% if (locals.error) { %>
+  <div class="alert alert-error">
+    <strong>[Erreur BaseX] :</strong> <%= error %>
+  </div>
+<% } %>
+
+<!-- Dropdown Selector -->
+<div class="results-selector">
+  <label for="contestSelect"><strong>Select contest:</strong></label>
+  <select id="contestSelect" style="max-width: 400px;" onchange="if(this.value) window.location.href='/results?contestId=' + this.value">
+    <option value="" disabled <%= !selectedContest ? 'selected' : '' %>>-- Choose a contest --</option>
+    <% contests.forEach(contest => { %>
+      <option value="<%= contest.id %>" <%= selectedContest === contest.id ? 'selected' : '' %>>
+        <%= contest.titre %>
+      </option>
+    <% }) %>
+  </select>
+</div>
+
+<% if (selectedContest && results) { %>
+  <div class="leaderboard-container">
+    
+    <div class="contest-info-bar">
+      <h3 class="contest-info-title"><%= results.titre %></h3>
+      <span class="badge-coefficient">Coefficient : <strong><%= results.coefficient %></strong></span>
+    </div>
+
+    <!-- Leaderboard Headers -->
+    <div class="leaderboard-row leaderboard-header-row">
+      <div class="rank-col">Rank</div>
+      <div class="name-col">Participant</div>
+      <div class="email-col">Email Address</div>
+      <div class="number-col" style="text-align: center;">Complexity</div>
+      <div class="number-col" style="text-align: center;">Time (ms)</div>
+      <div class="score-col">Final Score</div>
+    </div>
+
+    <% if (results.participants && results.participants.length > 0) { %>
+      <% results.participants.forEach((part, index) => { %>
+        <div class="leaderboard-row <%= part.isWinner ? 'winner' : '' %>">
+          
+          <!-- Rank Column -->
+          <div class="rank-col">
+            <% if (part.isWinner) { %>
+              <span class="crown-icon">👑</span> 1
+            <% } else { %>
+              #<%= index + 1 %>
+            <% } %>
+          </div>
+
+          <!-- Name Column -->
+          <div class="name-col">
+            <%= part.nom %>
+          </div>
+
+          <!-- Email Column -->
+          <div class="email-col">
+            <%= part.email %>
+          </div>
+
+          <!-- Complexity -->
+          <div class="number-col" style="text-align: center;">
+            <%= part.complexite %>/100
+          </div>
+
+          <!-- Execution Time -->
+          <div class="number-col" style="text-align: center;">
+            <%= part.tempsExecution %> ms
+          </div>
+
+          <!-- Score -->
+          <div class="score-col">
+            <%= part.score %>
+          </div>
+
+        </div>
+      <% }) %>
+    <% } else { %>
+      <div class="no-results">
+        <p>No participants have registered for this contest yet.</p>
+      </div>
+    <% } %>
+
+  </div>
+<% } else if (selectedContest) { %>
+  <div class="no-results">
+    <p>Unable to load results for this contest.</p>
+  </div>
+<% } else { %>
+  <div class="no-results">
+    <p>Please select a contest above to display the score table.</p>
+  </div>
+<% } %>
+

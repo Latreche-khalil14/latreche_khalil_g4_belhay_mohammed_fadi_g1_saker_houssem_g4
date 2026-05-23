@@ -1,0 +1,15 @@
+# Dependency directories
+web/node_modules/
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# BaseX temp files
+temp_*.xq
+
+# OS files
+.DS_Store
+Thumbs.db

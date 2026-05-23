@@ -1,0 +1,108 @@
+
+<div class="hero-section">
+  <h2 class="page-title">Contests Dashboard</h2>
+  <p class="page-desc">Follow the Club Info_Tech competitions, technical specialties and real-time participation.</p>
+</div>
+
+<%
+  const totalContests = contests && contests.length ? contests.length : 0;
+  const totalParticipants = contests && contests.length
+    ? contests.reduce((sum, contest) => sum + Number(contest.partCount || 0), 0)
+    : 0;
+  const averageCoefficient = contests && contests.length
+    ? (contests.reduce((sum, contest) => sum + Number(contest.coefficient || 0), 0) / contests.length).toFixed(2)
+    : '0.00';
+  const specialties = contests && contests.length
+    ? Array.from(new Set(contests.map(contest => contest.categorie).filter(Boolean)))
+    : [];
+%>
+
+<div class="home-overview">
+  <div class="overview-card">
+    <p class="overview-label">Active Contests</p>
+    <p class="overview-value"><%= totalContests %></p>
+  </div>
+  <div class="overview-card">
+    <p class="overview-label">Total Participants</p>
+    <p class="overview-value"><%= totalParticipants %></p>
+  </div>
+  <div class="overview-card">
+    <p class="overview-label">Average Coefficient</p>
+    <p class="overview-value"><%= averageCoefficient %></p>
+  </div>
+  <div class="overview-card">
+    <p class="overview-label">Specialties Covered</p>
+    <p class="overview-value"><%= specialties.length %></p>
+  </div>
+</div>
+
+<section class="paths-section">
+  <h3 class="paths-title">Specialty Paths</h3>
+  <p class="paths-desc">Build your profile with focused tracks and join the right contest category.</p>
+  <div class="paths-grid">
+    <article class="path-card">
+      <h4>Data Scientist</h4>
+      <p>Statistics, feature engineering, model evaluation, and practical ML pipelines.</p>
+      <span class="path-tag">AI and Analytics</span>
+    </article>
+    <article class="path-card">
+      <h4>Data Engineer</h4>
+      <p>Data ingestion, ETL pipelines, warehouse modeling, and data quality monitoring.</p>
+      <span class="path-tag">Data Platform</span>
+    </article>
+    <article class="path-card">
+      <h4>Web Engineer</h4>
+      <p>Frontend architecture, backend APIs, performance tuning, and deployment workflows.</p>
+      <span class="path-tag">Web Development</span>
+    </article>
+    <article class="path-card">
+      <h4>Security Analyst</h4>
+      <p>Threat modeling, secure coding, penetration testing basics, and incident response.</p>
+      <span class="path-tag">Cybersecurity</span>
+    </article>
+    <article class="path-card">
+      <h4>DevOps Engineer</h4>
+      <p>CI/CD, observability, infrastructure as code, and resilient cloud delivery.</p>
+      <span class="path-tag">Platform Operations</span>
+    </article>
+  </div>
+</section>
+
+<% if (locals.error) { %>
+  <div class="alert alert-error">
+    <strong>[BaseX Error] :</strong> <%= error %>
+  </div>
+<% } %>
+
+<div class="contests-table-wrapper">
+  <% if (contests && contests.length > 0) { %>
+    <table class="contests-table">
+      <thead>
+        <tr>
+          <th>Titre</th>
+          <th>Date</th>
+          <th>Categorie</th>
+          <th>Coefficient</th>
+          <th>Participants</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% contests.forEach(contest => { %>
+          <tr>
+            <td><strong><%= contest.titre %></strong></td>
+            <td><%= contest.date %></td>
+            <td><span class="badge-category"><%= contest.categorie %></span></td>
+            <td><span class="badge-coefficient"><%= contest.coefficient %></span></td>
+            <td><%= contest.partCount %></td>
+            <td><a href="/results?contestId=<%= contest.id %>" class="btn-card table-btn">Leaderboard</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } else { %>
+    <div class="no-results">
+      <p>No contests available in the database.</p>
+    </div>
+  <% } %>
+</div>
