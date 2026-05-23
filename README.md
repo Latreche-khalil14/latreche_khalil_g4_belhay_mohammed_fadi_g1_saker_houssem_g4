@@ -1,6 +1,20 @@
 # Projets XML - ClubInfoTech
 
 Ce projet est un mini-projet de TP XML / XQuery / Web développé dans le cadre du module **Données Semi-structurées** à l'Université de Skikda (Département d'Informatique).
+## 📸 Captures d'écran (Interface Graphique Premium)
+
+### 📊 Tableau de bord (Dashboard)
+![Tableau de bord - Vue 1](capture/homepage1.png)
+![Tableau de bord - Vue 2](capture/homepage2)
+
+### 📝 Inscription Dynamique (Filtre intelligent des spécialités)
+![Inscription interactive](capture/register.png)
+
+### 🏆 Résultats & Classement (Leaderboard des vainqueurs)
+![Classement des participants](capture/result.png)
+
+### 💻 Console Interactive XQuery (Exécution en temps réel)
+![Console XQuery](capture/xquery.png)
 
 ## 👥 Membres de l'équipe
 * **Latreche Khalil (G4)**
@@ -36,17 +50,3 @@ Ce projet est un mini-projet de TP XML / XQuery / Web développé dans le cadre 
 
 ---
 
-## 📸 Captures d'écran (Interface Graphique Premium)
-
-### 📊 Tableau de bord (Dashboard)
-![Tableau de bord - Vue 1](capture/homepage1.png)
-![Tableau de bord - Vue 2](capture/homepage2)
-
-### 📝 Inscription Dynamique (Filtre intelligent des spécialités)
-![Inscription interactive](capture/register.png)
-
-### 🏆 Résultats & Classement (Leaderboard des vainqueurs)
-![Classement des participants](capture/result.png)
-
-### 💻 Console Interactive XQuery (Exécution en temps réel)
-![Console XQuery](capture/xquery.png)
