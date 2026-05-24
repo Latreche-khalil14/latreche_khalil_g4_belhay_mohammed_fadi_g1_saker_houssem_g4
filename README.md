@@ -16,6 +16,9 @@ Ce projet est un mini-projet de TP XML / XQuery / Web développé dans le cadre 
 ### 💻 Console Interactive XQuery (Exécution en temps réel)
 ![Console XQuery](capture/xquery.png)
 
+### 🖥️ Vue Supplémentaire
+![Capture supplémentaire](capture/Capture%20d'écran%202026-05-24%20013605.png)
+
 ## 👥 Membres de l'équipe
 * **Latreche Khalil (G4)**
 * **Belhay Mohammed Fadi (G1)**
